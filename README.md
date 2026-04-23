@@ -17,7 +17,7 @@ Generate terminal summaries, CSV/JSON exports, and detailed Word reports from Ne
 python3 -m venv .venv
 "./.venv/bin/pip" install -r requirements.txt
 ```
-## 2) 
+## 2) run the tool
 
 ```bash
 python nessus-report-gen.py
