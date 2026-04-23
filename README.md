@@ -15,14 +15,18 @@ Generate terminal summaries, CSV/JSON exports, and detailed Word reports from Ne
 
 ```bash
 python3 -m venv .venv
-"./.venv/bin/pip" install -r requirements.txt
+
+Source .venv/bin/activate #Linux
+.venv/Script/Activate.ps1 #windows
+
+pip install -r requirements.txt
 ```
 ## 2) run the tool
 
 ```bash
 python nessus-report-gen.py
 ```
-## 2) CLI summary (terminal + CSV/JSON)
+## 3) CLI summary (terminal + CSV/JSON)
 
 ```bash
 "./.venv/bin/python" nessus_summary.py "/path/to/scan.nessus"
