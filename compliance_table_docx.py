@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import re
 import xml.etree.ElementTree as ET
+from utils import count_l1_l2
 from typing import List, Optional, Tuple
 
 from docx import Document
@@ -79,19 +80,27 @@ def extract_rows(scan_path: str) -> Tuple[Optional[str], List[Tuple[str, str, st
     return host_ip, rows
 
 
-def build_docx(rows: List[Tuple[str, str, str, str]], output_path: str, host_ip: Optional[str] = None) -> None:
+def build_docx(rows, output_path, host_ip=None):
     document = Document()
     document.add_heading("Compliance Checks", level=1)
+
     if host_ip:
         document.add_paragraph(f"Host IP: {host_ip}")
+
+    # ✅ ADD L1/L2 COUNTS
+    l1, l2, total = count_l1_l2(rows)
+
+    document.add_paragraph(f"L1 Checks : {l1}")
+    document.add_paragraph(f"L2 Checks : {l2}")
+    document.add_paragraph(f"Total     : {total}")
 
     table = document.add_table(rows=1, cols=5)
     table.style = "Table Grid"
 
     headers = ["No", "L1/L2", "Check number", "Description", "Status"]
-    header_cells = table.rows[0].cells
+
     for idx, header in enumerate(headers):
-        header_cells[idx].text = header
+        table.rows[0].cells[idx].text = header
 
     for idx, (check_number, level, description, status) in enumerate(rows, start=1):
         row_cells = table.add_row().cells

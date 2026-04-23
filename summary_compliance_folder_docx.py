@@ -79,7 +79,7 @@ def build_report(scan_folder: Path, output_path: Path) -> None:
         findings = parse_nessus(str(scan_path))
         rows = build_compliance_rows(findings)
         host_ip = next((finding.get("host") for finding in findings if finding.get("host")), None)
-        add_table(document, rows, host_ip)
+    add_table(document, rows, host_ip)
         document.add_page_break()
 
     document.save(output_path)

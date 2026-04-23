@@ -10,6 +10,7 @@ from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
+from utils import count_l1_l2
 
 CHECK_PATTERN = re.compile(r"^(?P<check>\S+)\s+\((?P<level>L[12])\)\s+(?P<desc>.+)$")
 
@@ -142,6 +143,14 @@ def build_docx(items, output_path, host_ip=None):
     if host_ip:
         p = document.add_paragraph(f"Host: {host_ip}")
         p.runs[0].bold = True
+    # ✅ ADD COUNTS HERE
+    l1, l2, total = count_l1_l2(items)
+
+    document.add_heading("Compliance Detailed Report", level=1)
+    document.add_paragraph(f"L1 Checks : {l1}")
+    document.add_paragraph(f"L2 Checks : {l2}")
+    document.add_paragraph(f"Total     : {total}")
+    
     document.add_heading("Compliance Detailed Report", level=1)
     for item in items:
         table = document.add_table(rows=1, cols=3)
