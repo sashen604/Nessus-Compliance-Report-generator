@@ -8,6 +8,8 @@ Generate terminal summaries, CSV/JSON exports, and detailed Word reports from Ne
 - `Detailsreportgenratetor/details_report_docx.py` – detailed compliance Word report
 - `generate_compliance_docs.sh` – batch simple compliance docx
 - `Detailsreportgenratetor/generate_detailed_reports.sh` – batch detailed docx
+- `summary_reports_docx.py` – one Word file with summaries for many scans
+- `summary_compliance_folder_docx.py` – one Word file with compliance tables for many scans
 
 ## 1) Setup (recommended: virtual environment)
 
@@ -51,6 +53,18 @@ Examples:
 ### Detailed reports for many `.nessus` files
 ```bash
 ./Detailsreportgenratetor/generate_detailed_reports.sh "/path/to/nessus/folder" "/path/to/output-docs"
+```
+
+## 6) One Word file with summaries for many scans
+
+```bash
+"./.venv/bin/python" summary_reports_docx.py "/path/to/nessus/folder" --output "/path/to/summary_report.docx"
+```
+
+## 7) One Word file with compliance tables for many scans
+
+```bash
+"./.venv/bin/python" summary_compliance_folder_docx.py "/path/to/nessus/folder" --output "/path/to/compliance_summary_report.docx"
 ```
 
 ## Notes
