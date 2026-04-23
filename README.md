@@ -42,8 +42,17 @@ Examples:
 ```bash
 "./.venv/bin/python" Detailsreportgenratetor/details_report_docx.py "/path/to/scan.nessus" --output "/path/to/detailed_report.docx"
 ```
+## 5) Generate One Word document with all .nessus file in side Folder
+```bash
+python3 summary_compliance_folder_docx.py "path/reports" --output "path/compliance_summary_report.docx"
+```
 
-## 5) Batch generation scripts
+## 6) Genarate One word Document With all .nessus File inside Folder with Details report 
+```bash
+python3 Detail_report_folder_docx.py ../report/ --output finala_details_report.docx
+```
+
+## 7) Batch generation scripts
 
 ### Simple compliance tables for many `.nessus` files
 ```bash
@@ -55,13 +64,13 @@ Examples:
 ./Detailsreportgenratetor/generate_detailed_reports.sh "/path/to/nessus/folder" "/path/to/output-docs"
 ```
 
-## 6) One Word file with summaries for many scans
+## 8) One Word file with summaries for many scans
 
 ```bash
 "./.venv/bin/python" summary_reports_docx.py "/path/to/nessus/folder" --output "/path/to/summary_report.docx"
 ```
 
-## 7) One Word file with compliance tables for many scans
+## 9) One Word file with compliance tables for many scans
 
 ```bash
 "./.venv/bin/python" summary_compliance_folder_docx.py "/path/to/nessus/folder" --output "/path/to/compliance_summary_report.docx"
@@ -71,3 +80,5 @@ Examples:
 - All compliance fields are parsed, including `cm:compliance-*` tags.
 - Output `.docx`, `.csv`, and `.json` files are ignored by `.gitignore`.
 - If you need a different layout or styling, update `Detailsreportgenratetor/details_report_docx.py`.
+
+
