@@ -1,0 +1,169 @@
+#!/bin/bash
+
+cat << 'EOF'
+
+╔════════════════════════════════════════════════════════════════╗
+║        🎯 NESSUS EXCEL COMBINED EXPORT - QUICK REFERENCE      ║
+╚════════════════════════════════════════════════════════════════╝
+
+📌 START HERE:
+   python3 nessus-report-gen.py
+
+═══════════════════════════════════════════════════════════════
+
+✨ MAIN SCENARIOS:
+
+1️⃣  ONE FILE → ONE EXCEL
+   Path: /path/to/single_scan.nessus
+   Mode: 1 (doesn't matter, single file mode)
+   Output: single_scan_detailed.xlsx
+   
+   📊 Contains:
+      - IP Address | Check # | Level | Description | Result
+      - Info | Solution | Impact | Policy | Configured Value
+      - (10 columns, all data in one sheet)
+
+2️⃣  FOLDER → ONE COMBINED EXCEL ✨ NEW
+   Path: /path/to/folder/with/scans
+   Mode: 1 (Combined)
+   Output: combined_report.xlsx
+   
+   📊 Contains:
+      - 📄 File: scan1.nessus (Green header)
+      - Data rows (10 columns)
+      - [BLANK ROW SEPARATOR]
+      - 📄 File: scan2.nessus (Green header)
+      - Data rows
+      - [BLANK ROW SEPARATOR]
+      - ... (repeats for all .nessus files)
+
+3️⃣  FOLDER → SEPARATE EXCELS
+   Path: /path/to/folder/with/scans
+   Mode: 2 (Separate)
+   Output: Multiple .xlsx files
+   
+   📊 Creates:
+      - scan1_report.xlsx
+      - scan2_report.xlsx
+      - scan3_report.xlsx
+      - ... (one per .nessus file)
+
+═══════════════════════════════════════════════════════════════
+
+📋 FILTER OPTIONS:
+   Level 1: L1 + L2 (all compliance levels)
+   Level 2: L1 only (critical only)
+
+═══════════════════════════════════════════════════════════════
+
+🎨 COMBINED EXCEL COLORS:
+   
+   GREEN (#70AD47) ← File names
+   ┌─────────────────────────────────┐
+   │ 📄 File: scan1.nessus           │
+   └─────────────────────────────────┘
+   
+   BLUE (#B4C6E7) ← Column headers
+   ┌─────────────────────────────────┐
+   │ IP | Check | Level | Desc | ... │
+   └─────────────────────────────────┘
+   
+   WHITE ← Data rows
+   ┌─────────────────────────────────┐
+   │ 192.168.1.1 | ABC-123 | L1 | ... │
+   │ 192.168.1.2 | XYZ-456 | L2 | ... │
+   └─────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+
+📊 ALL COLUMNS (10 TOTAL):
+   1. IP Address
+   2. Check Number
+   3. Level (L1/L2)
+   4. Description
+   5. Result (Pass/Fail)
+   6. Info
+   7. Solution
+   8. Impact
+   9. Policy Value
+   10. Configured Value
+
+═══════════════════════════════════════════════════════════════
+
+⚙️  COMMAND-LINE OPTIONS:
+
+Single file:
+   python3 details_report_excel.py "/path/to/scan.nessus" \
+     --output "report.xlsx"
+
+With main generator:
+   python3 nessus-report-gen.py
+
+═══════════════════════════════════════════════════════════════
+
+✅ BENEFITS OF COMBINED MODE:
+
+   ✓ One file for all scans
+   ✓ Easy comparison across files
+   ✓ Clear visual separation
+   ✓ File names clearly labeled
+   ✓ Consistent formatting
+   ✓ No manual consolidation needed
+   ✓ One less file to manage
+
+═══════════════════════════════════════════════════════════════
+
+📁 OUTPUT EXAMPLES:
+
+   Default folder: output/
+   
+   └── output/
+       ├── combined_detailed_2024-04-24_10-30-45.xlsx
+       ├── summary_2024-04-24_10-30-45.docx
+       └── compliance_table_2024-04-24_10-30-45.docx
+
+═══════════════════════════════════════════════════════════════
+
+🚀 WORKFLOW EXAMPLE:
+
+   $ python3 nessus-report-gen.py
+   
+   1. Enter path: /home/user/scans
+   2. Report type: 3
+   3. Output mode: 1
+   4. Level filter: 1
+   5. Output folder: (press Enter)
+   6. Output name: my_compliance_report
+   
+   ✅ Creates: output/my_compliance_report.xlsx
+   
+   Opens in Excel with:
+   - All .nessus files from /home/user/scans
+   - Combined into ONE worksheet
+   - Clearly separated sections
+   - Ready to review and share
+
+═══════════════════════════════════════════════════════════════
+
+❓ FAQ:
+
+Q: How many files can it process?
+A: Unlimited! Works with any number of .nessus files.
+
+Q: Does it keep the formatting?
+A: Yes! Professional formatting throughout.
+
+Q: Can I edit it after export?
+A: Yes! It's a regular Excel file.
+
+Q: Is there a row limit?
+A: Excel has limits, but typical reports work fine.
+
+Q: Can I filter after export?
+A: Yes! Excel's filter/sort tools work normally.
+
+═══════════════════════════════════════════════════════════════
+
+Made with ❤️  for compliance teams
+
+EOF

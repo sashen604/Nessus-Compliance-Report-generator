@@ -10,6 +10,9 @@ from compliance_table_docx import extract_rows, build_docx
 # DETAILED PARSER + STYLE (YOUR GOOD FORMAT)
 from details_report_docx import extract_items, set_cell_bg, set_column_widths
 
+# EXCEL EXPORT
+from details_report_excel import build_excel, build_excel_combined
+
 # COUNT
 from utils import count_l1_l2
 
@@ -34,12 +37,13 @@ def ask_user():
 
     print("\n2. Report Type:")
     print("   1 - Summary (Table)")
-    print("   2 - Detailed (Professional)")
-    report_type = input("Choose (1/2): ").strip()
+    print("   2 - Detailed (Professional DOCX)")
+    print("   3 - Detailed (Excel)")
+    report_type = input("Choose (1/2/3): ").strip()
 
     print("\n3. Output Mode:")
-    print("   1 - Combined DOCX")
-    print("   2 - Separate DOCX per file")
+    print("   1 - Combined")
+    print("   2 - Separate file per report")
     output_mode = input("Choose (1/2): ").strip()
 
     print("\n4. Level Filter:")
@@ -58,7 +62,12 @@ def ask_user():
 # =========================
 def generate_name(report_type):
     now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    return f"{'summary' if report_type=='1' else 'detailed'}_{now}.docx"
+    if report_type == "1":
+        return f"summary_{now}.docx"
+    elif report_type == "3":
+        return f"detailed_{now}.xlsx"
+    else:
+        return f"detailed_{now}.docx"
 
 
 # =========================
@@ -170,7 +179,14 @@ def process_file(file_path, report_type, level_filter, output_file):
         rows = filter_level(rows, level_filter)
         build_docx(rows, output_file, host_ip)
 
+    elif report_type == "3":
+        # Excel report
+        host_ip, items = extract_items(file_path)
+        items = filter_level(items, level_filter)
+        build_excel(items, output_file, host_ip)
+
     else:
+        # Detailed DOCX report
         document = Document()
         document.add_heading("Compliance Detailed Report", 0)
 
@@ -196,8 +212,13 @@ def main():
     if not output_name:
         output_name = generate_name(report_type)
 
-    if not output_name.endswith(".docx"):
-        output_name += ".docx"
+    # Ensure correct file extension based on report type
+    if report_type == "3":
+        if not output_name.endswith(".xlsx"):
+            output_name = output_name.replace(".docx", "") + ".xlsx" if ".docx" in output_name else output_name + ".xlsx"
+    else:
+        if not output_name.endswith(".docx"):
+            output_name = output_name.replace(".xlsx", "") + ".docx" if ".xlsx" in output_name else output_name + ".docx"
 
     # SINGLE FILE
     if path.is_file():
@@ -219,41 +240,56 @@ def main():
                 process_file(str(f), report_type, level_filter, str(file_out))
 
         else:
-            document = Document()
-            document.add_heading("Combined Nessus Report", 0)
-
-            for f in files:
-                document.add_page_break()
-                document.add_heading(f"File: {f.name}", level=1)
-
-                if report_type == "1":
-                    host_ip, rows = extract_rows(str(f))
-                    rows = filter_level(rows, level_filter)
-
-                    table = document.add_table(rows=1, cols=5)
-                    table.style = "Table Grid"
-
-                    headers = ["No", "L1/L2", "Check number", "Description", "Status"]
-                    for i, h in enumerate(headers):
-                        table.rows[0].cells[i].text = h
-
-                    for idx, row in enumerate(rows, start=1):
-                        cells = table.add_row().cells
-                        cells[0].text = f"{idx:02d}"
-                        cells[1].text = row[1]
-                        cells[2].text = row[0]
-                        cells[3].text = row[2]
-                        cells[4].text = row[3]
-
-                else:
+            # For combined mode with Excel, create one combined file
+            if report_type == "3":
+                print("📊 Creating combined Excel file...")
+                all_files_data = []
+                
+                for f in files:
+                    print(f"   📂 Processing: {f.name}")
                     host_ip, items = extract_items(str(f))
                     items = filter_level(items, level_filter)
-                    build_detailed_pro_report(document, items, host_ip)
+                    all_files_data.append((f.name, host_ip, items))
+                
+                output_file = output_dir / output_name
+                build_excel_combined(all_files_data, str(output_file))
+                print(f"\n✅ Combined Excel saved: {output_file}")
+            else:
+                document = Document()
+                document.add_heading("Combined Nessus Report", 0)
 
-            output_file = output_dir / output_name
-            document.save(output_file)
+                for f in files:
+                    document.add_page_break()
+                    document.add_heading(f"File: {f.name}", level=1)
 
-            print(f"\n📄 Combined saved: {output_file}")
+                    if report_type == "1":
+                        host_ip, rows = extract_rows(str(f))
+                        rows = filter_level(rows, level_filter)
+
+                        table = document.add_table(rows=1, cols=5)
+                        table.style = "Table Grid"
+
+                        headers = ["No", "L1/L2", "Check number", "Description", "Status"]
+                        for i, h in enumerate(headers):
+                            table.rows[0].cells[i].text = h
+
+                        for idx, row in enumerate(rows, start=1):
+                            cells = table.add_row().cells
+                            cells[0].text = f"{idx:02d}"
+                            cells[1].text = row[1]
+                            cells[2].text = row[0]
+                            cells[3].text = row[2]
+                            cells[4].text = row[3]
+
+                    else:
+                        host_ip, items = extract_items(str(f))
+                        items = filter_level(items, level_filter)
+                        build_detailed_pro_report(document, items, host_ip)
+
+                output_file = output_dir / output_name
+                document.save(output_file)
+
+                print(f"\n📄 Combined saved: {output_file}")
 
 
 # =========================
