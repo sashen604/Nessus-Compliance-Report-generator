@@ -68,12 +68,12 @@ def extract_items(scan_path: str) -> Tuple[Optional[str], List[dict]]:
         if compliance_text is None and compliance_result is None:
             continue
 
-        check_name = _find_text(report_item, "compliance-check-name")
+        check_name = _find_text(report_item, "compliance-check-name") or _find_text(report_item, "cm:compliance-check-name")
         check_number, level, description = parse_check_name(check_name)
         
         # If level wasn't found from check_name format, try to get it from cm:compliance-benchmark-profile
         if not level:
-            level = _find_text(report_item, "cm:compliance-benchmark-profile") or ""
+            level = _find_text(report_item, "cm:compliance-benchmark-profile") or _find_text(report_item, "compliance-benchmark-profile") or ""
             # If still no level but we have description, use description as is
             if not level and not description:
                 description = check_name or ""
@@ -81,9 +81,9 @@ def extract_items(scan_path: str) -> Tuple[Optional[str], List[dict]]:
             # If we got level from parse_check_name but not description, use check_name
             description = check_name or ""
 
-        info_text = _find_text(report_item, "compliance-info") or ""
-        solution_text = _find_text(report_item, "compliance-solution") or ""
-        impact_text = _find_text(report_item, "compliance-impact") or ""
+        info_text = _find_text(report_item, "compliance-info") or _find_text(report_item, "cm:compliance-info") or ""
+        solution_text = _find_text(report_item, "compliance-solution") or _find_text(report_item, "cm:compliance-solution") or ""
+        impact_text = _find_text(report_item, "compliance-impact") or _find_text(report_item, "cm:compliance-impact") or ""
 
         if not impact_text and solution_text:
             split_token = "Impact:"
@@ -94,10 +94,10 @@ def extract_items(scan_path: str) -> Tuple[Optional[str], List[dict]]:
 
         items.append(
             {
-                "check_number": check_number or _find_text(report_item, "cm:compliance-check-id") or "",
+                "check_number": check_number or _find_text(report_item, "cm:compliance-check-id") or _find_text(report_item, "compliance-check-id") or "",
                 "level": level,
                 "description": description,
-                "result": compliance_result or _find_text(report_item, "cm:compliance-result") or _find_text(report_item, "cm:compliance-actual-value") or "Unknown",
+                "result": compliance_result or _find_text(report_item, "cm:compliance-result") or _find_text(report_item, "compliance-result") or _find_text(report_item, "cm:compliance-actual-value") or "Unknown",
                 "info": info_text,
                 "solution": solution_text,
                 "impact": impact_text,

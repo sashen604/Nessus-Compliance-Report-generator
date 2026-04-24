@@ -68,9 +68,22 @@ def extract_rows(scan_path: str) -> Tuple[Optional[str], List[Tuple[str, str, st
         if compliance_text is None and compliance_result is None:
             continue
 
-        check_name = _find_text(report_item, "compliance-check-name")
+        check_name = _find_text(report_item, "compliance-check-name") or _find_text(report_item, "cm:compliance-check-name")
         check_number, level, description = parse_check_name(check_name)
-        status = compliance_result or "Unknown"
+        
+        # If level wasn't found from check_name format, try to get it from cm:compliance-benchmark-profile
+        if not level:
+            level = _find_text(report_item, "cm:compliance-benchmark-profile") or _find_text(report_item, "compliance-benchmark-profile") or ""
+            # If still no level but we have description, use description as is
+            if not level and not description:
+                description = check_name or ""
+        elif not description:
+            # If we got level from parse_check_name but not description, use check_name
+            description = check_name or ""
+            
+        status = compliance_result or _find_text(report_item, "cm:compliance-result") or _find_text(report_item, "compliance-result") or _find_text(report_item, "cm:compliance-actual-value") or "Unknown"
+        
+        check_number = check_number or _find_text(report_item, "cm:compliance-check-id") or _find_text(report_item, "compliance-check-id") or ""
 
         if not check_number and not level and not description:
             continue
