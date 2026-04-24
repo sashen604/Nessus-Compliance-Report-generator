@@ -45,6 +45,14 @@ def parse_check_name(check_name: Optional[str]) -> Tuple[str, str, str]:
             match.group("desc"),
         )
 
+    win7_match = re.match(r"^(?P<check>[\d\.]+)\s+(?P<desc>.+)$", check_name)
+    if win7_match:
+        return (
+            win7_match.group("check"),
+            "",
+            win7_match.group("desc"),
+        )
+
     return "", "", check_name
 
 
