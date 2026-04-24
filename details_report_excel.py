@@ -70,6 +70,16 @@ def extract_items(scan_path: str) -> Tuple[Optional[str], List[dict]]:
 
         check_name = _find_text(report_item, "compliance-check-name")
         check_number, level, description = parse_check_name(check_name)
+        
+        # If level wasn't found from check_name format, try to get it from cm:compliance-benchmark-profile
+        if not level:
+            level = _find_text(report_item, "cm:compliance-benchmark-profile") or ""
+            # If still no level but we have description, use description as is
+            if not level and not description:
+                description = check_name or ""
+        elif not description:
+            # If we got level from parse_check_name but not description, use check_name
+            description = check_name or ""
 
         info_text = _find_text(report_item, "compliance-info") or ""
         solution_text = _find_text(report_item, "compliance-solution") or ""
@@ -84,15 +94,15 @@ def extract_items(scan_path: str) -> Tuple[Optional[str], List[dict]]:
 
         items.append(
             {
-                "check_number": check_number,
+                "check_number": check_number or _find_text(report_item, "cm:compliance-check-id") or "",
                 "level": level,
                 "description": description,
-                "result": compliance_result or "Unknown",
+                "result": compliance_result or _find_text(report_item, "cm:compliance-result") or _find_text(report_item, "cm:compliance-actual-value") or "Unknown",
                 "info": info_text,
                 "solution": solution_text,
                 "impact": impact_text,
-                "policy_value": _find_text(report_item, "compliance-policy-value") or "",
-                "actual_value": _find_text(report_item, "compliance-actual-value") or "",
+                "policy_value": _find_text(report_item, "cm:compliance-policy-value") or _find_text(report_item, "compliance-policy-value") or "",
+                "actual_value": _find_text(report_item, "cm:compliance-actual-value") or _find_text(report_item, "compliance-actual-value") or "",
             }
         )
 
